@@ -1,6 +1,6 @@
 # Slack Summarizer
 
-Slackbot to summarize the content of a slack thread 
+Slackbot to summarize the content of a slack thread with ChatGPT
 
 Invite it to a channel, then mention it in a thread and it will generate a summary of what has been said 
 
