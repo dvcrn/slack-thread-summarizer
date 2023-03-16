@@ -4,6 +4,8 @@ Slackbot to summarize the content of a slack thread with ChatGPT
 
 Invite it to a channel, then mention it in a thread and it will generate a summary of what has been said 
 
+![screenshot](screenshot.png)
+
 ## Installation
 
 Create a new slack app, go to manifests and paste this manifest: 
@@ -86,6 +88,11 @@ That's it!
 
 Start it with `mix`
 
+## Tweaking
+
+- Tweak the prompt in `config.exs`
+- To make the bot more random, go into `chatgpt.ex` and change the `temperature` setting: `temperature: 0.6`. A higher temperature is more randomness, a lower temperature is more predictable
+
 ## Deploy to fly.io
 
 Included is a simple `fly.toml` file that lets you deploy the bot to https://fly.io
@@ -93,3 +100,9 @@ Included is a simple `fly.toml` file that lets you deploy the bot to https://fly
 - Change `app = "mybot"` in fly.toml
 - Run `fly launch` 
 - Set env variables with `fly secrets set XXX=YYY`
+
+## Other fun things you can do
+
+Change the prompt and enable `enable_normal_mentions` to create a sassy snark chatbot, fun for the whole family 
+
+![aikun](aikun.png)
