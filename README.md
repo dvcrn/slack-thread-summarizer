@@ -85,3 +85,11 @@ That's it!
 ## Usage 
 
 Start it with `mix`
+
+## Deploy to fly.io
+
+Included is a simple `fly.toml` file that lets you deploy the bot to https://fly.io
+
+- Change `app = "mybot"` in fly.toml
+- Run `fly launch` 
+- Set env variables with `fly secrets set XXX=YYY`
