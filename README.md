@@ -1,8 +1,10 @@
 # Elixir GPT Slack Bot
 
-Slackbot written in Elixir to summarize (or act on) the content of slack messages with ChatGPT
+Slackbot written in Elixir or act on the content of slack messages with ChatGPT
 
-Invite it to a channel, then mention it (in a thread) and it will generate a summary of what has been said 
+Originally written to summarize the content of a slack thread: Invite it to a channel, then mention it (in a thread) and it will generate a summary of what has been said
+
+See "Other fun things you can do" for inspiration
 
 ![screenshot](screenshot.png)
 
