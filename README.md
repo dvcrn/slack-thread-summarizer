@@ -19,7 +19,7 @@ Create a new slack app, go to manifests and paste this manifest:
     "features": {
         "bot_user": {
             "display_name": "Thread Summarizer",
-            "always_online": false
+            "always_online": true
         }
     },
     "oauth_config": {
@@ -60,19 +60,25 @@ Create a new slack app, go to manifests and paste this manifest:
 }
 ```
 
-Next, click on "Basic Information", scroll down to "App-Level Tokens". This is your `slack_token`.
+Next, click on "Basic Information", scroll down to "App-Level Tokens". This is your `slack_app_token`.
 
 Click on "OAuth & Permission", install the app into your workspace, then copy the "Bot User OAuth Token". This is your `slack_web_token`
 
-Put both of those into your `config.exs`:
+`runtime.exs` is setup to read those from the environment, so set the following env keys: 
 
 ```elixir
 config :summarizer,
-  slack_token: "",
-  slack_web_token: ""
+  slack_app_token: System.get_env("SLACK_APP_TOKEN"),
+  slack_web_token: System.get_env("SLACK_WEB_TOKEN")
+
+config :ex_openai,
+  api_key: System.get_env("OPENAI_API_KEY"),
+  organization_key: System.get_env("OPENAI_ORGANIZATION_KEY"),
+  http_options: [recv_timeout: 50_000]
 ```
 
-Also in your `config.exs`, add your OpenAI OPENAI_API_KEY and OPENAI_ORGANIZATION_KEY
+In `config.exs`, you have the option to change the prompt used, or to enable whether to also respond to normal @mentions outside of threads.
+
 
 That's it!
 

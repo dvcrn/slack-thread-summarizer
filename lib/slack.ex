@@ -38,25 +38,46 @@ defmodule Slack do
   end
 
   defmodule Conversations do
-    defp extract_user_ids(%{"user_id" => user_id, "type" => "user"}) do
+    def extract_user_ids(%{"user_id" => user_id, "type" => "user"}) do
       user_id
     end
 
-    defp extract_user_ids(%{"elements" => elements}) when is_list(elements) do
+    def extract_user_ids(%{"elements" => elements}) when is_list(elements) do
       Enum.map(elements, &extract_user_ids/1)
     end
 
-    defp extract_user_ids(%{"blocks" => blocks}) when is_list(blocks) do
+    def extract_user_ids(%{"blocks" => blocks}) when is_list(blocks) do
       Enum.map(blocks, &extract_user_ids/1)
       |> List.flatten()
       |> Enum.filter(&(!is_nil(&1)))
     end
 
-    defp extract_user_ids(_), do: nil
+    def extract_user_ids(_), do: nil
 
     @spec replies(any, any) :: {:error, any} | {:ok, [Slack.Message.t()]}
     def replies(channel, ts) do
       case Slack.Client.api_get("conversations.replies", :web, channel: channel, ts: ts) do
+        {:ok, %{"ok" => true, "messages" => msgs}} ->
+          {:ok,
+           Enum.map(msgs, fn msg ->
+             msg
+             |> Map.put("mentioned_user_ids", extract_user_ids(msg))
+             |> Slack.Message.from_map()
+           end)}
+
+        {:error, e} ->
+          {:error, e}
+      end
+    end
+
+    @spec history(any, any) :: {:error, any} | {:ok, [Slack.Message.t()]}
+    def history(channel, ts, limit \\ 5) do
+      case Slack.Client.api_get("conversations.history", :web,
+             channel: channel,
+             latest: ts,
+             inclusive: true,
+             limit: limit
+           ) do
         {:ok, %{"ok" => true, "messages" => msgs}} ->
           {:ok,
            Enum.map(msgs, fn msg ->
@@ -83,6 +104,18 @@ defmodule Slack do
   defmodule Chat do
     @spec post_thread_reply(String.t(), String.t(), String.t(), keyword) ::
             {:error, any} | {:ok, any}
+    def post_message(channel, text, opts \\ []) do
+      Slack.Client.api_post(
+        "chat.postMessage",
+        :web,
+        [
+          channel: channel,
+          text: text
+        ],
+        opts
+      )
+    end
+
     def post_thread_reply(channel, thread_ts, text, opts \\ []) do
       Slack.Client.api_post(
         "chat.postMessage",
@@ -105,6 +138,15 @@ defmodule Slack do
           {:ok, %{"ok" => true, "url" => url}} -> {:ok, url}
           {:error, e} -> {:error, e}
         end
+      end
+    end
+  end
+
+  defmodule Auth do
+    def myid() do
+      case Slack.Client.api_post("auth.test", :web) do
+        {:ok, %{"user_id" => uid}} -> {:ok, uid}
+        {:error, e} -> {:error, e}
       end
     end
   end

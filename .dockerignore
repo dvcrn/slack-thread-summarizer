@@ -1,28 +1,44 @@
+# flyctl launch added from .elixir_ls/.gitignore
+.elixir_ls/**/*
+
+# flyctl launch added from .gitignore
 # The directory Mix will write compiled artifacts to.
-/_build/
+_build
 
 # If you run "mix test --cover", coverage assets end up here.
-/cover/
+cover
 
 # The directory Mix downloads your dependencies sources to.
-/deps/
+deps
 
 # Where third-party dependencies like ExDoc output generated docs.
-/doc/
+doc
 
 # Ignore .fetch files in case you like to edit your project deps locally.
-/.fetch
+.fetch
 
 # If the VM crashes, it generates a dump, let's ignore it too.
-erl_crash.dump
+**/erl_crash.dump
 
 # Also ignore archive artifacts (built via "mix archive.build").
-*.ez
+**/*.ez
 
 # Ignore package tarball (built via "mix hex.build").
-summarizer-*.tar
+**/summarizer-*.tar
 
 # Temporary files, for example, from tests.
-/tmp/
+tmp
 
+# flyctl launch added from deps/slack/.gitignore
+deps/slack/_build
+deps/slack/deps
+deps/slack/doc
+deps/slack/**/erl_crash.dump
+deps/slack/**/*.ez
+
+deps/slack/**/.idea
+deps/slack/**/*.iml
+
+deps/slack/**/.elixir_ls
+fly.toml
 .envrc

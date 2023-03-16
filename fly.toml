@@ -1,0 +1,22 @@
+# fly.toml file generated for roastbot on 2023-03-15T20:55:51+09:00
+
+app = "slackbot"
+kill_signal = "SIGINT"
+kill_timeout = 5
+primary_region = "nrt"
+processes = []
+
+[build]
+  builder = "heroku/buildpacks:20"
+  buildpacks = ["https://cnb-shim.herokuapp.com/v1/hashnuke/elixir"]
+
+[env]
+  PORT = "8080"
+
+[experimental]
+  auto_rollback = true
+
+[[services]]
+  processes = ["app"]
+  protocol = "tcp"
+  script_checks = []

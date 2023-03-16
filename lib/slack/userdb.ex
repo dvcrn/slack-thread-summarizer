@@ -6,7 +6,16 @@ defmodule Slack.Userdb do
     Logger.info("Starting userdb")
 
     Agent.start_link(
-      fn -> [] end,
+      fn ->
+        case Slack.Auth.myid() do
+          {:ok, uid} ->
+            IO.puts("bot uid:: #{inspect(uid)}")
+            [%{id: "botid", name: uid}]
+
+          _ ->
+            []
+        end
+      end,
       name: __MODULE__
     )
   end
