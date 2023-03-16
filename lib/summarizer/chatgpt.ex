@@ -21,7 +21,7 @@ defmodule Summarizer.Chatgpt do
     operator_message = %ExOpenAI.Components.ChatCompletionRequestMessage{
       role: :system,
       name: "system",
-      content: Application.get_env(:summarizer, :prompt)
+      content: Application.get_env(:summarizer, :prompt) |> String.replace("{botid}", botid)
     }
 
     chatgpt_messages =
@@ -32,7 +32,7 @@ defmodule Summarizer.Chatgpt do
       end)
       |> Enum.map(fn msg ->
         %ExOpenAI.Components.ChatCompletionRequestMessage{
-          content: "#{msg.text}",
+          content: msg.text,
           role: role(msg, botid),
           name: sanitize_name(msg.user)
         }
