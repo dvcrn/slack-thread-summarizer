@@ -27,6 +27,7 @@ defmodule Summarizer.Chatgpt do
     chatgpt_messages =
       msgs
       # sort messages
+      |> Enum.filter(fn msg -> msg.user != botid end)
       |> Enum.sort(fn a, b ->
         Kernel.elem(Float.parse(a.ts), 0) <= Kernel.elem(Float.parse(b.ts), 0)
       end)
@@ -40,11 +41,24 @@ defmodule Summarizer.Chatgpt do
 
     case ExOpenAI.Chat.create_chat_completion(
            [operator_message | chatgpt_messages],
-           "gpt-3.5-turbo",
+           "gpt-4",
            temperature: 0.6
          ) do
-      {:ok, result} -> {:ok, List.first(result.choices) |> extract_result()}
-      {:error, e} -> {:error, e}
+      {:ok, result} ->
+        {:ok, List.first(result.choices) |> extract_result()}
+
+      {:error, %{"error" => %{"message" => msg}}} ->
+        IO.puts("got error message: #{inspect(msg)}")
+
+        if String.contains?(msg, "The server had an error while processing your request.") do
+          summarize(msgs, botid)
+        else
+          {:error, msg}
+        end
+
+      {:error, e} ->
+        IO.puts("got error: #{inspect(e)}")
+        {:error, e}
     end
   end
 end

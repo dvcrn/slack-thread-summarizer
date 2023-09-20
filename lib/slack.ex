@@ -150,4 +150,28 @@ defmodule Slack do
       end
     end
   end
+
+  defmodule Reactions do
+    def remove(channel, reaction, ts) do
+      case Slack.Client.api_post("reactions.remove", :web,
+             channel: channel,
+             name: reaction,
+             timestamp: ts
+           ) do
+        {:ok, _} -> :ok
+        {:error, e} -> {:error, e}
+      end
+    end
+
+    def add(channel, reaction, ts) do
+      case Slack.Client.api_post("reactions.add", :web,
+             channel: channel,
+             name: reaction,
+             timestamp: ts
+           ) do
+        {:ok, _} -> :ok
+        {:error, e} -> {:error, e}
+      end
+    end
+  end
 end

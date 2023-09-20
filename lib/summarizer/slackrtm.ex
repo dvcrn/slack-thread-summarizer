@@ -62,11 +62,11 @@ defmodule Summarizer.SlackRtm do
           "channel" => channel,
           "ts" => ts,
           "thread_ts" => thread_ts,
-          "user" => mentioned_user
+          "user" => mentioned_user,
+          "text" => text
         },
         state
       ) do
-    IO.inspect("got a app_mention -- thread")
 
     spawn(fn ->
       case Summarizer.Msgdb.get(ts) do
@@ -85,6 +85,9 @@ defmodule Summarizer.SlackRtm do
           raise e
       end
 
+      Slack.Reactions.add(channel, "loading", ts)
+      Slack.Reactions.add(channel, "eyes", ts)
+
       case Slack.Conversations.replies(channel, thread_ts) do
         {:error, e} ->
           {:error, e}
@@ -92,9 +95,12 @@ defmodule Summarizer.SlackRtm do
         {:ok, msgs} ->
           case summarize_messages(msgs) do
             {:ok, summary} ->
+              Slack.Reactions.remove(channel, "loading", ts)
               Slack.Chat.post_thread_reply(channel, thread_ts, summary)
 
             {:error, e} ->
+              Slack.Reactions.remove(channel, "loading", ts)
+
               Slack.Chat.post_thread_reply(
                 channel,
                 thread_ts,
@@ -138,7 +144,7 @@ defmodule Summarizer.SlackRtm do
           raise e
       end
 
-      case Slack.Conversations.history(channel, ts, 10) do
+      case Slack.Conversations.history(channel, ts, 5) do
         {:error, e} ->
           {:error, e}
 
@@ -149,6 +155,11 @@ defmodule Summarizer.SlackRtm do
 
             {:error, e} ->
               IO.inspect(e)
+
+              Slack.Chat.post_message(
+                channel,
+                "Sorry, something went wrong: #{inspect(e)}"
+              )
           end
       end
     end)
@@ -158,14 +169,12 @@ defmodule Summarizer.SlackRtm do
 
   @impl true
   def handle_event(%{"type" => "reaction_added"}, state) do
-    IO.inspect("got a new reaction")
     {:ok, state}
   end
 
   @impl true
   @spec handle_event(map, any) :: {:ok, any}
   def handle_event(_message = %{"type" => "message"}, state) do
-    IO.inspect("got a message")
     {:ok, state}
   end
 
