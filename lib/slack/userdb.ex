@@ -20,7 +20,6 @@ defmodule Slack.Userdb do
     )
   end
 
-  @spec get(String.t()) :: {:error, any} | {:ok, Slack.User.t()}
   def get(userid) do
     Agent.get(
       __MODULE__,
@@ -41,7 +40,7 @@ defmodule Slack.Userdb do
         {:ok, u}
 
       {:error, :no_data} ->
-        IO.puts("User #{userid} not in DB yet")
+        IO.puts("User '#{userid}' not in DB yet")
 
         case Slack.Users.info(userid) do
           {:ok, u} ->
@@ -50,8 +49,9 @@ defmodule Slack.Userdb do
 
             {:ok, u}
 
-          e ->
-            e
+          {:error, e} ->
+            IO.puts("error fetching user info for #{userid}")
+            {:error, e}
         end
     end
   end

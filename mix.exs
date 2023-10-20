@@ -31,7 +31,8 @@ defmodule Summarizer.MixProject do
       # {:slack, "~> 0.23.5"},
       {:ex_openai, ">= 1.0.4"},
       {:websockex, "~> 0.4.3"},
-      {:jason, "~> 1.4"}
+      {:jason, "~> 1.4"},
+      {:tokenizers, "~> 0.3.0"}
 
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:slack, git: "https://github.com/BlakeWilliams/Elixir-Slack.git", tag: "v0.23.6"}

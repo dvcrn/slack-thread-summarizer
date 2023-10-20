@@ -95,8 +95,14 @@ defmodule Slack do
   defmodule Users do
     def info(user) do
       case Slack.Client.api_get("users.info", :web, user: user) do
-        {:ok, %{"ok" => true, "user" => user}} -> {:ok, Slack.User.from_map(user)}
-        {:error, e} -> {:error, e}
+        {:ok, %{"ok" => true, "user" => user}} ->
+          {:ok, Slack.User.from_map(user)}
+
+        {:ok, %{"error" => err, "ok" => false}} ->
+          {:error, err}
+
+        {:error, e} ->
+          {:error, e}
       end
     end
   end

@@ -2,11 +2,15 @@
 
 Slackbot written in Elixir or act on the content of slack messages with ChatGPT
 
-Originally written to summarize the content of a slack thread: Invite it to a channel, then mention it (in a thread) and it will generate a summary of what has been said
+Originally written to summarize the content of a slack thread: Invite it to a channel, then mention it (in a thread) and it will generate a summary of what has been said.
+
+The bot takes additional instructions like "summarize this in Spanish" or "summarize this as a poem".
 
 See "Other fun things you can do" for inspiration
 
 ![screenshot](screenshot.png)
+
+![poem](poem.png)
 
 ## Installation
 
@@ -82,7 +86,6 @@ config :ex_openai,
 ```
 
 In `config.exs`, you have the option to change the prompt used, or to enable whether to also respond to normal @mentions outside of threads.
-
 
 That's it!
 

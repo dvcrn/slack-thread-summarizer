@@ -11,6 +11,7 @@ defmodule Summarizer.Application do
       Slack.Config,
       Slack.Userdb,
       Summarizer.Msgdb,
+      Summarizer.Tokenizer,
       Summarizer.SlackRtm
     ]
 

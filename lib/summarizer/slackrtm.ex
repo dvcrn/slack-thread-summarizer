@@ -27,8 +27,13 @@ defmodule Summarizer.SlackRtm do
     {:ok, state}
   end
 
-  @spec summarize_messages(list) :: {:error, any} | {:ok, any}
-  def summarize_messages(msgs) do
+  def link_slack_ids(text) do
+    regex = ~r/(@?)([UWB][A-Z0-9]{8,})/
+    Regex.replace(regex, text, "<@\\2>")
+  end
+
+  @spec summarize_messages(list, String.t()) :: {:error, any} | {:ok, any}
+  def summarize_messages(msgs, instruction) do
     msgs =
       msgs
       |> Enum.map(fn msg ->
@@ -45,9 +50,9 @@ defmodule Summarizer.SlackRtm do
         _ -> ""
       end
 
-    case Summarizer.Chatgpt.summarize(msgs, botid) do
+    case Summarizer.Chatgpt.summarize(msgs, instruction, botid) do
       {:ok, summary} ->
-        {:ok, summary}
+        {:ok, link_slack_ids(summary)}
 
       {:error, e} ->
         IO.inspect(e)
@@ -67,7 +72,6 @@ defmodule Summarizer.SlackRtm do
         },
         state
       ) do
-
     spawn(fn ->
       case Summarizer.Msgdb.get(ts) do
         :already_processed -> raise "message was already processed, will skip"
@@ -93,7 +97,7 @@ defmodule Summarizer.SlackRtm do
           {:error, e}
 
         {:ok, msgs} ->
-          case summarize_messages(msgs) do
+          case summarize_messages(msgs, text) do
             {:ok, summary} ->
               Slack.Reactions.remove(channel, "loading", ts)
               Slack.Chat.post_thread_reply(channel, thread_ts, summary)
@@ -120,7 +124,7 @@ defmodule Summarizer.SlackRtm do
           "channel" => channel,
           "ts" => ts,
           "user" => mentioned_user,
-          "text" => _text
+          "text" => text
         },
         state
       )
@@ -149,7 +153,7 @@ defmodule Summarizer.SlackRtm do
           {:error, e}
 
         {:ok, msgs} ->
-          case summarize_messages(msgs) do
+          case summarize_messages(msgs, text) do
             {:ok, summary} ->
               Slack.Chat.post_message(channel, summary)
 
